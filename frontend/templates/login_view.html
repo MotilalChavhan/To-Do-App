@@ -1,0 +1,34 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<br>
+<br>
+<br>
+{% if message %}
+    <div class="alert alert-danger alert-dismissible d-flex align-items-center" role="alert">
+        <div>{{ message }}</div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endif %}
+<center>
+<div class="card shadow" style="width: 50%;">
+    <div class="card-body">
+        <h5 class="card-title">Sign In</h5>
+        <form action="{% url 'login' %}" method="post" class="row g-3">
+            {% csrf_token %}
+            <div class="col-sm-12">
+                <input type="text" class="form-control" name="username" placeholder="Username" required>
+            </div>
+
+            <div class="col-sm-12">
+                <input type="password" class="form-control" name="password" placeholder="Password" required>
+            </div>
+
+            <div class="col-sm-12 d-flex justify-content-end">
+                <button type="submit" class="btn btn-success" id="login">Sign In</button>
+            </div>
+        </form>
+    </div>
+</div>
+</center>
+{% endblock %}
