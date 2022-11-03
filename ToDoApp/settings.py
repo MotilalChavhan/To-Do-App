@@ -132,6 +132,6 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-        'api.permissions.IsOwner'
+        # 'api.permissions.IsOwner'
     ]
 }
