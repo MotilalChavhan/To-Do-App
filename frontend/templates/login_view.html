@@ -72,12 +72,11 @@
         axios.post(callURL, {
             "username" : dataObj['username'],
             "password" : dataObj['password']
-        }).then(res => {
-            console.log(res.data);
+        })
+        .then(res => {
             localStorage.setItem('access', res.data.access);
             localStorage.setItem('refresh', res.data.refresh);
         })
-    })
-    
+    })   
 </script>
 {% endblock %}
