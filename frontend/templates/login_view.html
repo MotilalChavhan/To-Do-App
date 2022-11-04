@@ -14,7 +14,7 @@
 <div class="card shadow" style="width: 50%;">
     <div class="card-body">
         <h5 class="card-title">Sign In</h5>
-        <form action="{% url 'login' %}" method="post" class="row g-3">
+        <form method="post" class="row g-3" id="loginForm">
             {% csrf_token %}
             <div class="col-sm-12">
                 <input type="text" class="form-control" name="username" placeholder="Username" required>
@@ -36,7 +36,7 @@
 <div class="card shadow" style="width: 50%;">
     <div class="card-body">
         <h5 class="card-title">Register</h5>
-        <form action="{% url 'register' %}" method="post" class="row g-3">
+        <form action="{% url 'register' %}" method="post" class="row g-3" id="registerForm">
             {% csrf_token %}
             <div class="col-sm-12">
                 <input type="text" class="form-control" name="username" placeholder="Username" required>
@@ -53,12 +53,31 @@
             <div class="col-sm-12">
                 <input type="password" class="form-control" name="confirmation" placeholder="Confirm Password" required>
             </div>
-            <p class="text-muted">Note: Your password can not be too similar to your other personal information/must contain at least 8 characters/can not be a commonly used password/can not be entirely numeric.</p>
+            
             <div class="col-sm-12 d-flex justify-content-end">
-                <button type="submit" class="btn btn-success" id="login">Sign In</button>
+                <button type="submit" class="btn btn-success" id="register">Register</button>
             </div>
         </form>
     </div>
 </div>
 </center>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script>
+    let loginForm = document.getElementById("loginForm");
+    loginForm.addEventListener('submit', () => {
+        let data = new FormData(loginForm);
+        let dataObj = Object.fromEntries(data);
+        let callURL = `${document.location.protocol}//${document.location.host}/api/token/`
+        axios.post(callURL, {
+            "username" : dataObj['username'],
+            "password" : dataObj['password']
+        }).then(res => {
+            console.log(res.data);
+            localStorage.setItem('access', res.data.access);
+            localStorage.setItem('refresh', res.data.refresh);
+        })
+    })
+    
+</script>
 {% endblock %}

@@ -21,6 +21,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
 <script>
+    axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
     document.querySelector("#button-addon2").addEventListener('click', () => {
         let title = document.querySelector("#task").value.trim();
         let callURL = `${document.location.protocol}//${document.location.host}/api/`;
@@ -31,6 +32,12 @@
                 "title" : title,
                 "completed" : false
             }).then(location.reload())
+            .catch(err => {
+                let callURL = `${document.location.protocol}//${document.location.host}/api/token/refresh/`;
+                axios.post(callURL, {
+                    "refresh" : localStorage.getItem('refresh')
+                }).then(res => localStorage.setItem('access', res.data.access))
+            })
         }
     })
     let callURL = `${document.location.protocol}//${document.location.host}/api`;
@@ -84,6 +91,6 @@
                 axios.delete(callURL).then(location.reload())
             })
         }
-    })
+    }).catch(err => console.log(err))
 </script>
 {% endblock %}
