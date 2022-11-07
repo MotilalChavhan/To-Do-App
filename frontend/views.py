@@ -28,7 +28,7 @@ def register(request):
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
-            return render(request, "register.html", {
+            return render(request, "login_view.html", {
                 "message": "Passwords must match."
             })
 
@@ -36,11 +36,13 @@ def register(request):
             user = User.objects.create_user(username, email, password)
             user.save()
         except IntegrityError:
-            return render(request, "register.html", {
+            return render(request, "login_view.html", {
                 "message": "Username already taken."
             })
         login(request, user)
-        return HttpResponseRedirect(reverse("tasks"))
+        return render(request, "login_view.html", {
+            "message" : "Account created successfully. Sign In to create your own to-do list"
+        })
 
     return render(request, "login_view.html")
 
