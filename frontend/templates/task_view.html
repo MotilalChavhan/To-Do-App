@@ -21,7 +21,10 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
 <script>
+    // setting access token in headers from cookies
     axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
+    
+    // adding a task to the todo list and submitting it to /api endpoint
     document.querySelector("#button-addon2").addEventListener('click', () => {
         let title = document.querySelector("#task").value.trim();
         let callURL = `${document.location.protocol}//${document.location.host}/api/`;
@@ -44,6 +47,8 @@
             })
         }
     })
+
+    // fetching the list of tasks from /api endpoint and adding it to the todo list
     let callURL = `${document.location.protocol}//${document.location.host}/api`;
     let ul = document.querySelector('.list-group');
     axios.get(callURL).then(res => {
@@ -69,6 +74,7 @@
         }
     })
     .then(() => {
+        // updating task status on change if its completed or not by checking the checkbox value
         let li = document.querySelectorAll('li');
         for (let i = 0; i < li.length; i++) {
             let checkbox = li[i].getElementsByTagName('input')[0];
@@ -89,11 +95,13 @@
                     }).then(res => {
                         localStorage.setItem('access', res.data.access);
                         location.reload();
+                    }).catch(err => {
+                        window.location.href = `${document.location.protocol}//${document.location.host}/logout`;
                     })
                 })
             })
         }
-        
+        // adding a eventlistener to delete button to delete a task from the todo list
         for (let i = 0; i < li.length; i++) {
             let button = li[i].getElementsByTagName('button')[0];
             let checkbox = li[i].getElementsByTagName('input')[0];
@@ -111,6 +119,8 @@
                     }).then(res => {
                         localStorage.setItem('access', res.data.access);
                         location.reload();
+                    }).catch(err => {
+                        window.location.href = `${document.location.protocol}//${document.location.host}/logout`;
                     })
                 })
             })
@@ -123,6 +133,8 @@
         }).then(res => {
             localStorage.setItem('access', res.data.access);
             location.reload();
+        }).catch(err => {
+            window.location.href = `${document.location.protocol}//${document.location.host}/logout`;
         })
     })
 </script>

@@ -10,6 +10,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 {% endif %}
+
+<div id="message"></div>
+
 <center>
 <div class="card shadow" style="width: 50%;">
     <div class="card-body">
@@ -36,7 +39,7 @@
 <div class="card shadow" style="width: 50%;">
     <div class="card-body">
         <h5 class="card-title">Register</h5>
-        <form action="{% url 'register' %}" method="post" class="row g-3" id="registerForm">
+        <form method="post" class="row g-3" id="registerForm">
             {% csrf_token %}
             <div class="col-sm-12">
                 <input type="text" class="form-control" name="username" placeholder="Username" required>
@@ -77,6 +80,37 @@
             localStorage.setItem('access', res.data.access);
             localStorage.setItem('refresh', res.data.refresh);
         })
-    })   
+    })
+
+    // submitting registration form to /api/register endpoint
+    let registerForm = document.getElementById("registerForm");
+    registerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        let data = new FormData(registerForm);
+        let dataObj = Object.fromEntries(data);
+        let callURL = `${document.location.protocol}//${document.location.host}/api/register`;
+        axios.post(callURL, {
+            "username" : dataObj['username'],
+            "email" : dataObj['email'],
+            "password" : dataObj['password'],
+            "confirmation" : dataObj['confirmation']
+        })
+        .then(res => {
+            let alertPlaceholder = document.getElementById('message');
+            function alertMessage(message, type) {
+                let wrapper = document.createElement('div');
+                wrapper.innerHTML = '<div class="alert alert-' + type + ' alert-dismissible" role="alert">' + message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
+                alertPlaceholder.append(wrapper)
+            }
+            console.log(res.data.message, res.data.status);
+            if (res.data.status === 'success') {
+                registerForm.reset();
+                alertMessage(res.data.message, res.data.status);
+            }
+            else {
+                alertMessage(res.data.message, "danger");
+            }
+        })
+    })
 </script>
 {% endblock %}

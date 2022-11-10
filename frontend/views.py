@@ -3,8 +3,6 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.db import IntegrityError
 
 def login_view(request):
     if request.method == 'POST':
@@ -20,31 +18,6 @@ def login_view(request):
             })
     else:
         return render(request, "login_view.html")
-
-def register(request):
-    if request.method == "POST":
-        username = request.POST["username"]
-        email = request.POST["email"]
-        password = request.POST["password"]
-        confirmation = request.POST["confirmation"]
-        if password != confirmation:
-            return render(request, "login_view.html", {
-                "message": "Passwords must match."
-            })
-
-        try:
-            user = User.objects.create_user(username, email, password)
-            user.save()
-        except IntegrityError:
-            return render(request, "login_view.html", {
-                "message": "Username already taken."
-            })
-        login(request, user)
-        return render(request, "login_view.html", {
-            "message" : "Account created successfully. Sign In to create your own to-do list"
-        })
-
-    return render(request, "login_view.html")
 
 def logout_view(request):
     logout(request)
