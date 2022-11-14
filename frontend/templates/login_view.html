@@ -17,7 +17,7 @@
 <div class="card shadow" style="width: 50%;">
     <div class="card-body">
         <h5 class="card-title">Sign In</h5>
-        <form action="{% url 'login' %}" method="post" class="row g-3" id="loginForm">
+        <form method="post" class="row g-3" id="loginForm">
             {% csrf_token %}
             <div class="col-sm-12">
                 <input type="text" class="form-control" name="username" placeholder="Username" required>
@@ -67,18 +67,42 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
 <script>
+    // alert message function
+    let alertPlaceholder = document.getElementById('message');
+    function alertMessage(message, type) {
+        let wrapper = document.createElement('div');
+        wrapper.innerHTML = '<div class="alert alert-' + type + ' alert-dismissible" role="alert">' + message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
+        alertPlaceholder.append(wrapper)
+    }
+
+    // login form submission
     let loginForm = document.getElementById("loginForm");
-    loginForm.addEventListener('submit', () => {
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
         let data = new FormData(loginForm);
         let dataObj = Object.fromEntries(data);
-        let callURL = `${document.location.protocol}//${document.location.host}/api/token/`
+        let callURL = `${document.location.protocol}//${document.location.host}/api/login`;
         axios.post(callURL, {
             "username" : dataObj['username'],
             "password" : dataObj['password']
         })
         .then(res => {
-            localStorage.setItem('access', res.data.access);
-            localStorage.setItem('refresh', res.data.refresh);
+            // checking if user exists or not
+            if (res.data.status === 'fail') {
+                alertMessage(res.data.message, 'danger');
+                return;
+            }
+            // assigning access/refresh token in local storage
+            let callURL = `${document.location.protocol}//${document.location.host}/api/token/`
+            axios.post(callURL, {
+                "username" : dataObj['username'],
+                "password" : dataObj['password']
+            })
+            .then(res => {
+                localStorage.setItem('access', res.data.access);
+                localStorage.setItem('refresh', res.data.refresh);
+                window.location.href = `${document.location.protocol}//${document.location.host}/tasks`
+            })
         })
     })
 
@@ -103,6 +127,7 @@
                 alertPlaceholder.append(wrapper)
             }
             console.log(res.data.message, res.data.status);
+            // displaying alert message on successfull/unsuccessfull registration
             if (res.data.status === 'success') {
                 registerForm.reset();
                 alertMessage(res.data.message, res.data.status);

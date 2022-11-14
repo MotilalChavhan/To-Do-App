@@ -21,7 +21,13 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
 <script>
-    // setting access token in headers from cookies
+    // removing access token and refresh token from localstorage on logout
+    document.querySelector("a").addEventListener('click', () => {
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+    })
+    
+    // setting access token in headers from local storage
     axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access')}`;
     
     // adding a task to the todo list and submitting it to /api endpoint
