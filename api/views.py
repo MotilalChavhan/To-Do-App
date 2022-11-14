@@ -5,34 +5,12 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Task
-from .serializers import TaskSerializer
+from .serializers import TaskSerializer, RegisterSerializer
 
-class RegisterView(APIView):
+class RegisterView(generics.CreateAPIView):
     authentication_classes = []
     permission_classes = []
-    def post(self, request):
-        username = request.data['username']
-        email = request.data['email']
-        password = request.data['password']
-        confirmation = request.data['confirmation']
-        if password != confirmation:
-            return Response({
-                "message" : "Passwords must match.",
-                "status" : "fail"
-            })
-
-        try:
-            user = User.objects.create_user(username, email, password)
-            user.save()
-        except IntegrityError:
-            return Response({
-                "message" : "Username is already taken. Try using another one.",
-                "status" : "fail"
-            })
-        return Response({
-            "message" : "Account created successfully. Sign In to create your own to-do list",
-            "status" : "success"
-        })
+    serializer_class = RegisterSerializer
 
 class LoginView(APIView):
     authentication_classes = []

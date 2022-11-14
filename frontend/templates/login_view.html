@@ -56,6 +56,8 @@
             <div class="col-sm-12">
                 <input type="password" class="form-control" name="confirmation" placeholder="Confirm Password" required>
             </div>
+
+            <p class="text-muted">Note: Password should contain atleast 8 characters and It should not be entirely numeric.</p>
             
             <div class="col-sm-12 d-flex justify-content-end">
                 <button type="submit" class="btn btn-success" id="register">Register</button>
@@ -112,7 +114,7 @@
         e.preventDefault();
         let data = new FormData(registerForm);
         let dataObj = Object.fromEntries(data);
-        let callURL = `${document.location.protocol}//${document.location.host}/api/register`;
+        let callURL = `${document.location.protocol}//${document.location.host}/api/registration`;
         axios.post(callURL, {
             "username" : dataObj['username'],
             "email" : dataObj['email'],
@@ -126,15 +128,25 @@
                 wrapper.innerHTML = '<div class="alert alert-' + type + ' alert-dismissible" role="alert">' + message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
                 alertPlaceholder.append(wrapper)
             }
-            console.log(res.data.message, res.data.status);
+            if (res.data.username === dataObj['username'])
+                alertMessage('Account created successfully. Sign In to create your own To-Do list.', 'success');
+            registerForm.reset();
+        })
+        .catch(error => {
+            let alertPlaceholder = document.getElementById('message');
+            function alertMessage(message, type) {
+                let wrapper = document.createElement('div');
+                wrapper.innerHTML = '<div class="alert alert-' + type + ' alert-dismissible" role="alert">' + message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
+                alertPlaceholder.append(wrapper)
+            }
+            // console.log(res.data.message, res.data.status);
             // displaying alert message on successfull/unsuccessfull registration
-            if (res.data.status === 'success') {
-                registerForm.reset();
-                alertMessage(res.data.message, res.data.status);
-            }
-            else {
-                alertMessage(res.data.message, "danger");
-            }
+            if (error.response.data.username !== undefined)
+                alertMessage(`username : ${error.response.data.username[0]}`, "danger");
+            else if (error.response.data.email !== undefined)
+                alertMessage(`email : ${error.response.data.email[0]}`, "danger");
+            else
+                alertMessage(`password : ${error.response.data.password[1]}`, "danger");
         })
     })
 </script>
